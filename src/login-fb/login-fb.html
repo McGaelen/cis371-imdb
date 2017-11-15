@@ -1,4 +1,8 @@
+<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <dom-module id="login-fb">
   <template>
@@ -7,26 +11,58 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+    
+    <firebase-app id="myFireApp" 
+                  api-key="AIzaSyCv8A7XuE4j85_ft7kJmNGx6pNu48ASQmQ"
+                  auth-domain="cis357-semprj.firebaseapp.com"
+                  database-url="https://cis357-semprj.firebaseio.com" 
+                  storage-bucket="cis357-semprj.appspot.com" 
+                  messaging-sender-id="823241171696">
+    </firebase-app>
+    <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
+    <firebase-auth id="auth"
+                   app-name="myFireApp"
+                   provider="google"
+                   signed-in="{{signedIn}}"
+                   status-known="{{statusKnown}}"
+                   user="{{user}}">
+    </firebase-auth>
+      
+    <template is="dom-if" if="[[user]]">
+        <h1>Welcome [[user.displayName]]</h1>
+    </template>
+
+    <paper-button raised on-tap="login" hidden$="[[user]]">Sign In</paper-button>
+    <paper-button raised on-tap="logout" hidden$="[[!user]]">Sign Out</paper-button>
+    
+      
+<!--
+    <h2>Please Sign-In!</h2>
+      
+    <paper-button raised on-tap="login" hidden$="[[user]]">Sign In</paper-button>
+-->
+
   </template>
 
   <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    class LoginFb extends Polymer.Element {
-      static get is() { return 'login-fb'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'login-fb'
+    HTMLImports.whenReady(() => {
+      Polymer({
+        is: 'login-fb',
+        properties: {
+          user: {
+            type: Object
+          },
+          statusKnown: {
+            type: Object
           }
-        };
-      }
-    }
-
-    window.customElements.define(LoginFb.is, LoginFb);
+        },
+        login: function() {
+          return this.$.auth.signInWithPopup();
+        },
+        logout: function() {
+          return this.$.auth.signOut();
+        },
+      });
+    });
   </script>
 </dom-module>

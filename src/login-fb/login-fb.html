@@ -2,6 +2,18 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app-script.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
 
 <dom-module id="login-fb">
   <template>
@@ -10,6 +22,7 @@
         display: block;
       }
       paper-button {
+		padding:5px;
           background-color: deepskyblue;
       }
     </style>
@@ -25,6 +38,20 @@
     </firebase-app>
       
     <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
+	<firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
+    <h2>Hello [[prop1]]!</h2>
+	<paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
+	
+	<paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
+		<paper-dialog-scrollable>
+		<paper-input id="title" label="Title" required></paper-input>
+		<paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Cancel</paper-button>
+			<paper-button dialog-confirm>Add</paper-button>
+		</div>
+		</paper-dialog-scrollable>
+    </paper-dialog>
     
     <div id="loginItems">
         <h2></h2>
@@ -51,6 +78,23 @@
           }
         };
       }
+	  addReview() {
+			this.$.newReview.open();
+		}
+		
+		diaClosed() {
+			if (this.$.newReview.closingReason.confirmed && this.$.review.value!=null && this.$.title.value!=null) { 
+				alert ("You entered a review for " + this.$.title.value);				
+				const dbRef = this.$.myFireApp.app.database();
+				dbRef.ref('/imdb').push().set({ title : this.$.title.value,
+				review: this.$.review.value });
+			}
+			else if (this.$.newReview.closingReason.confirmed ){
+				this.$.newReview.open();
+				this.$.title.validate();
+				this.$.review.validate();
+			}
+		}
         
       doLogin() {
         this.$.fbauth.signInWithPopup().then( result => {

@@ -1,5 +1,4 @@
-<script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+ <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -10,59 +9,61 @@
       :host {
         display: block;
       }
+      paper-button {
+          background-color: deepskyblue;
+      }
     </style>
     
-    <firebase-app id="myFireApp" 
-                  api-key="AIzaSyCv8A7XuE4j85_ft7kJmNGx6pNu48ASQmQ"
-                  auth-domain="cis357-semprj.firebaseapp.com"
-                  database-url="https://cis357-semprj.firebaseio.com" 
-                  storage-bucket="cis357-semprj.appspot.com" 
-                  messaging-sender-id="823241171696">
+    <firebase-app id="myFireApp"
+                  name="imdb"
+                  api-key="AIzaSyB8kuGtgnbvN5imJSBltSfAT1nNbiNrhSU"
+                  auth-domain="cis371-semprj.firebaseapp.com"
+                  database-url="https://cis371-semprj.firebaseio.com" 
+                  storage-bucket="cis371-semprj.appspot.com" 
+                  messaging-sender-id="860536671337"
+                  project-id="cis371-semprj">
     </firebase-app>
-    <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
-    <firebase-auth id="auth"
-                   app-name="myFireApp"
-                   provider="google"
-                   signed-in="{{signedIn}}"
-                   status-known="{{statusKnown}}"
-                   user="{{user}}">
-    </firebase-auth>
       
-    <template is="dom-if" if="[[user]]">
-        <h1>Welcome [[user.displayName]]</h1>
-    </template>
-
-    <paper-button raised on-tap="login" hidden$="[[user]]">Sign In</paper-button>
-    <paper-button raised on-tap="logout" hidden$="[[!user]]">Sign Out</paper-button>
+    <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
     
+    <div id="loginItems">
+        <h2></h2>
+        <paper-button raised on-click="doLogin">Login with Google</paper-button>
+    </div>
       
-<!--
-    <h2>Please Sign-In!</h2>
-      
-    <paper-button raised on-tap="login" hidden$="[[user]]">Sign In</paper-button>
--->
+    <div id="welcome"></div>
 
   </template>
-
+    
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script>
-    HTMLImports.whenReady(() => {
-      Polymer({
-        is: 'login-fb',
-        properties: {
-          user: {
-            type: Object
-          },
-          statusKnown: {
-            type: Object
+    /**
+     * @customElement
+     * @polymer
+     */
+    class LoginFb extends Polymer.Element {
+      static get is() { return 'login-fb'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'login-fb'
           }
-        },
-        login: function() {
-          return this.$.auth.signInWithPopup();
-        },
-        logout: function() {
-          return this.$.auth.signOut();
-        },
-      });
-    });
+        };
+      }
+        
+      $("#welcome").hide();
+        
+      doLogin() {
+        this.$.fbauth.signInWithPopup().then( result => {
+            $("#loginItems").hide();
+            $("#welcome").html("<h2>Welcome " + result.user.displayName + "</h2>");
+            $("#welcome").show();
+//            alert("User is " + result.u b      ser.displayName);
+        });
+      }
+        
+    }
+    window.customElements.define(LoginFb.is, LoginFb);
   </script>
 </dom-module>

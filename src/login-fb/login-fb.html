@@ -52,14 +52,9 @@
         };
       }
         
-      $("#welcome").hide();
-        
       doLogin() {
         this.$.fbauth.signInWithPopup().then( result => {
-            $("#loginItems").hide();
-            $("#welcome").html("<h2>Welcome " + result.user.displayName + "</h2>");
-            $("#welcome").show();
-//            alert("User is " + result.u b      ser.displayName);
+            alert("User is " + result.user.displayName);
         });
       }
         

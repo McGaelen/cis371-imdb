@@ -1,4 +1,4 @@
- <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -14,99 +14,133 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
+<script src="../../node_modules/jquery/dist/jquery.js"></script>
 
 <dom-module id="login-fb">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-      paper-button {
-			padding:5px;
-			background-color: deepskyblue;
-      }
-	  paper-dialog paper-button {
-			padding:5px;
-			background-color: white;	
-	  }
-    </style>
-    
-    <firebase-app id="myFireApp"
-                  name="imdb"
-                  api-key="AIzaSyB8kuGtgnbvN5imJSBltSfAT1nNbiNrhSU"
-                  auth-domain="cis371-semprj.firebaseapp.com"
-                  database-url="https://cis371-semprj.firebaseio.com" 
-                  storage-bucket="cis371-semprj.appspot.com" 
-                  messaging-sender-id="860536671337"
-                  project-id="cis371-semprj">
-    </firebase-app>
-      
-    <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
-	<firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
-    <h2>Hello [[prop1]]!</h2>
-	<paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
-	
-	<paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
-		<paper-dialog-scrollable>
-		<paper-input id="title" label="Title" required></paper-input>
-		<paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
-		<div class="buttons">
-			<paper-button dialog-dismiss>Cancel</paper-button>
-			<paper-button dialog-confirm>Add</paper-button>
-		</div>
-		</paper-dialog-scrollable>
-    </paper-dialog>
-    
-    <div id="loginItems">
-        <h2></h2>
-        <paper-button raised on-click="doLogin">Login with Google</paper-button>
-    </div>
-      
-    <div id="welcome"></div>
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-button {
+                padding:5px;
+                background-color: deepskyblue;
+            }
+            paper-dialog paper-button {
+                padding:5px;
+                background-color: white;
+            }
+        </style>
 
-  </template>
-    
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-  <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    class LoginFb extends Polymer.Element {
-      static get is() { return 'login-fb'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'login-fb'
-          }
-        };
-      }
-	  addReview() {
-			this.$.newReview.open();
-		}
-		
-		diaClosed() {
-			if (this.$.newReview.closingReason.confirmed && this.$.review.value!=null && this.$.title.value!=null) { 
-				alert ("You entered a review for " + this.$.title.value);				
-				const dbRef = this.$.myFireApp.app.database();
-				dbRef.ref('/imdb').push().set({ title : this.$.title.value,
-				review: this.$.review.value });
-			}
-			else if (this.$.newReview.closingReason.confirmed ){
-				this.$.newReview.open();
-				this.$.title.validate();
-				this.$.review.validate();
-			}
-		}
-        
-      doLogin() {
-        this.$.fbauth.signInWithPopup().then( result => {
-            alert("User is " + result.user.displayName);
-        });
-      }
-        
-    }
-    window.customElements.define(LoginFb.is, LoginFb);
-  </script>
+        <firebase-app id="myFireApp"
+                      name="imdb"
+                      api-key="AIzaSyB8kuGtgnbvN5imJSBltSfAT1nNbiNrhSU"
+                      auth-domain="cis371-semprj.firebaseapp.com"
+                      database-url="https://cis371-semprj.firebaseio.com"
+                      storage-bucket="cis371-semprj.appspot.com"
+                      messaging-sender-id="860536671337"
+                      project-id="cis371-semprj">
+        </firebase-app>
+
+        <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
+        <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
+        <h2>Hello [[prop1]]!</h2>
+        <paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
+
+        <paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
+            <paper-dialog-scrollable>
+                <paper-input id="title" label="Title" required></paper-input>
+                <paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
+                <div class="buttons">
+                    <paper-button dialog-dismiss>Cancel</paper-button>
+                    <paper-button dialog-confirm>Add</paper-button>
+                </div>
+            </paper-dialog-scrollable>
+        </paper-dialog>
+
+        <div id="loginItems">
+            <h2></h2>
+            <paper-button raised on-click="doLogin">Login with Google</paper-button>
+        </div>
+
+        <div>
+            <paper-input id="movieSearch" value="{{movieSearchTerm}}"></paper-input>
+            <paper-button on-click="searchForMovie">Search</paper-button>
+        </div>
+
+        <div id="welcome"></div>
+
+    </template>
+
+    <!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
+    <script>
+        /**
+         * @customElement
+         * @polymer
+         */
+        class LoginFb extends Polymer.Element {
+            static get is() { return 'login-fb'; }
+            static get properties() {
+                return {
+                    prop1: {
+                        type: String,
+                        value: 'login-fb'
+                    },
+                    apiKey: {
+                        type: String,
+                        value: 'apikey=de39c12d'
+                    },
+                    baseURL: {
+                        type: String,
+                        value: 'http://www.omdbapi.com/?'
+                    },
+                    movieSearchTerm: {
+                        type: String
+                    }
+                };
+            }
+
+            searchForMovie() {
+                console.log(this.$.movieSearch.value);
+                console.log(this.movieSearchTerm);
+                if (this.$.movieSearch.value) {
+                    console.log(`searching for movie "${this.$.movieSearch.value}"`);
+                    $.ajax({
+                        url: `${baseURL}key=${apiKey}&s=${this.$.movieSearch.value}`,
+                        type: "GET"
+                    })
+                        .done( (response) => {
+                            console.log(response);
+                        });
+                }
+            }
+
+            addReview() {
+                this.$.newReview.open();
+            }
+
+            diaClosed() {
+                console.log(this.$.title.value);
+                if (this.$.newReview.closingReason.confirmed && this.$.review.value!=null && this.$.title.value!=null) {
+                    alert ("You entered a review for " + this.$.title.value);
+                    const dbRef = this.$.myFireApp.app.database();
+                    dbRef.ref('/imdb').push().set({ title : this.$.title.value,
+                        review: this.$.review.value });
+                }
+                else if (this.$.newReview.closingReason.confirmed ){
+                    this.$.newReview.open();
+                    this.$.title.validate();
+                    this.$.review.validate();
+                }
+            }
+
+            doLogin() {
+                this.$.fbauth.signInWithPopup().then( result => {
+                    alert("User is " + result.user.displayName);
+                });
+            }
+
+        }
+        window.customElements.define(LoginFb.is, LoginFb);
+    </script>
 </dom-module>

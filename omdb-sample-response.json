@@ -1,3 +1,5 @@
+// this is only returned when doing a query for one movie. searching gives less data but multiple movies
+
 {
     "Title":"Blade",
     "Year":"1998",

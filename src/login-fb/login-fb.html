@@ -14,6 +14,8 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 <script src="../../node_modules/jquery/dist/jquery.js"></script>
 
 <dom-module id="login-fb">
@@ -21,6 +23,9 @@
         <style>
             :host {
                 display: block;
+                --paper-input-container-input: {
+                    font-size: 20px;
+                };
             }
             paper-button {
                 padding:5px;
@@ -29,6 +34,36 @@
             paper-dialog paper-button {
                 padding:5px;
                 background-color: white;
+            }
+
+            #movieSearch {
+                font-size: 20px;
+            }
+
+            #movieSearchSection {
+                padding: 10px;
+            }
+
+            #searchResults {
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+
+            .movie-thumbnail {
+                margin-top: 8px;
+                width: 200px;
+                height: 300px;
+            }
+
+            .movie-data {
+                margin-left: 10px;
+            }
+
+            paper-icon-item {
+                --paper-item-selected: {
+                    background: var(--paper-blue-400);
+                    font-weight: bold;
+                }
             }
         </style>
 
@@ -63,9 +98,20 @@
             <paper-button raised on-click="doLogin">Login with Google</paper-button>
         </div>
 
-        <div>
-            <paper-input id="movieSearch" value="{{movieSearchTerm}}"></paper-input>
+        <div id="movieSearchSection">
+            <paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
             <paper-button on-click="searchForMovie">Search</paper-button>
+            <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
+            <template>
+                <paper-icon-item>
+                    <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
+                    <paper-item-body two-line class="movie-data">
+                        <div>[[result.Title]]</div>
+                        <div secondary>[[result.Year]]</div>
+                    </paper-item-body>
+                </paper-icon-item>
+            </template>
+            </iron-list>
         </div>
 
         <div id="welcome"></div>
@@ -96,22 +142,29 @@
                     },
                     movieSearchTerm: {
                         type: String
+                    },
+                    searchResults: {
+                        type: Object
                     }
                 };
             }
 
             searchForMovie() {
-                console.log(this.$.movieSearch.value);
-                console.log(this.movieSearchTerm);
                 if (this.$.movieSearch.value) {
                     console.log(`searching for movie "${this.$.movieSearch.value}"`);
                     $.ajax({
-                        url: `${baseURL}key=${apiKey}&s=${this.$.movieSearch.value}`,
+                        url: `${this.baseURL}&${this.apiKey}&s=${this.$.movieSearch.value}`,
                         type: "GET"
                     })
-                        .done( (response) => {
-                            console.log(response);
-                        });
+                    .done( (response) => {
+                        console.log(response);
+                        this.searchResults = response;
+                    })
+                    .fail( (xhr, status, errorThrown) => {
+                        alert(`Error: ${errorThrown}`);
+                        console.log(`Error: ${errorThrown}`);
+                        console.log(`Status: ${status}`);
+                    });
                 }
             }
 

@@ -201,3 +201,95 @@
         window.customElements.define(LoginFb.is, LoginFb);
     </script>
 </dom-module>
+
+
+<!--
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+
+<dom-module id="my-main-app">
+  <template>
+    <style include="iron-flex iron-flex-alignment">
+    </style>
+
+    <style>
+      :host {
+        display: inline-block;
+      }
+      paper-card{
+        background-color: lightblue;
+        width: 99vw;
+      }
+      paper-tabs {
+        --paper-tabs-selection-bar-color: blue;
+      }
+      paper-tab{
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+    </style>
+
+    <paper-card elevation="5">
+        <div class="header layout horizontal center-justified">
+          <h1>Movie Review Application</h1>
+        </div>
+        <div class="content layout horizontal center-justified">
+          <paper-tabs selected="{{sel}}">
+            <paper-tab>Home</paper-tab>
+            <paper-tab>Leave a Review</paper-tab>
+            <paper-tab>Show Me Movies</paper-tab>
+          </paper-tabs>
+        </div>
+    </paper-card>
+
+
+    <iron-pages selected="[[sel]]">
+      <div id="HOME">
+        <h3>Home</h3>
+        <p>(Home content)</p>
+      </div>
+
+      <div id="REVIEW">
+        <h3>Reviews</h3>
+        <p>(Leave a review UI)</p>
+      </div>
+
+      <div id="MOVIES">
+        <h3>Movies</h3>
+        <p>(List of movies UI)</p>
+      </div>
+    </iron-pages>
+
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class MyMainApp extends Polymer.Element {
+      static get is() { return 'my-main-app'; }
+      static get properties() {
+        return {
+            sel: {
+                type: Number,
+                value: 0
+            }
+        };
+      }
+
+
+    }
+
+    window.customElements.define(MyMainApp.is, MyMainApp);
+  </script>
+</dom-module>
+-->

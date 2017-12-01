@@ -1,13 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app-script.html">
-<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -16,10 +15,16 @@
 <link rel="import" href="../../bower_components/paper-styles/color.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs-icons.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <script src="../../node_modules/jquery/dist/jquery.js"></script>
 
 <dom-module id="login-fb">
     <template>
+        <style include="iron-flex iron-flex-alignment">
+        </style>
         <style>
             :host {
                 display: block;
@@ -48,7 +53,7 @@
                 margin-top: 15px;
                 padding-top: 15px;
                 padding-bottom: 15px;
-                width: 500px;
+                width: 100%;
                 height: 600px;
                 border: solid 1px;
                 border-radius: 6px;
@@ -64,11 +69,20 @@
                 margin-left: 10px;
             }
 
-            paper-icon-item {
-                --paper-item-selected: {
-                    background: var(--paper-blue-400);
-                    font-weight: bold;
-                }
+
+
+            paper-card {
+                background-color: lightblue;
+                width: 99vw;
+            }
+
+            paper-tabs {
+                --paper-tabs-selection-bar-color: blue;
+            }
+
+            paper-tab {
+                margin-left: 20px;
+                margin-right: 20px;
             }
         </style>
 
@@ -84,42 +98,99 @@
 
         <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
-        <h2>Hello [[prop1]]!</h2>
-        <paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
 
-        <paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
-            <paper-dialog-scrollable>
-                <paper-input id="title" label="Title" required></paper-input>
-                <paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
-                <div class="buttons">
-                    <paper-button dialog-dismiss>Cancel</paper-button>
-                    <paper-button dialog-confirm>Add</paper-button>
+        <paper-card elevation="5">
+            <div class="header layout horizontal center-justified">
+                <h1>Movie Review Application</h1>
+            </div>
+            <div class="content layout horizontal center-justified">
+                <paper-tabs selected="{{sel}}">
+                    <paper-tab>Home</paper-tab>
+                    <paper-tab>Leave a Review</paper-tab>
+                    <paper-tab>Show Me Movies</paper-tab>
+                </paper-tabs>
+            </div>
+        </paper-card>
+
+
+        <iron-pages selected="[[sel]]">
+            <div id="HOME">
+                <h3>Home</h3>
+                <div id="loginItems">
+                    <h2></h2>
+                    <paper-button raised on-click="doLogin">Login with Google</paper-button>
                 </div>
-            </paper-dialog-scrollable>
-        </paper-dialog>
+            </div>
 
-        <div id="loginItems">
-            <h2></h2>
-            <paper-button raised on-click="doLogin">Login with Google</paper-button>
-        </div>
+            <div id="REVIEW">
+                <h3>Reviews</h3>
+                <paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
 
-        <div id="movieSearchSection">
-            <paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
-            <paper-button on-click="searchForMovie">Search</paper-button>
-            <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
-            <template>
-                <paper-icon-item>
-                    <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
-                    <paper-item-body two-line class="movie-data">
-                        <div>[[result.Title]]</div>
-                        <div secondary>[[result.Year]]</div>
-                    </paper-item-body>
-                </paper-icon-item>
-            </template>
-            </iron-list>
-        </div>
+                <paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
+                    <paper-dialog-scrollable>
+                        <paper-input id="title" label="Title" required></paper-input>
+                        <paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
+                        <div class="buttons">
+                            <paper-button dialog-dismiss>Cancel</paper-button>
+                            <paper-button dialog-confirm>Add</paper-button>
+                        </div>
+                    </paper-dialog-scrollable>
+                </paper-dialog>
+            </div>
 
-        <div id="welcome"></div>
+            <div id="MOVIES">
+                <h3>Movies</h3>
+                <div id="movieSearchSection">
+                    <paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
+                    <paper-button on-click="searchForMovie">Search</paper-button>
+                    <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
+                        <template>
+                            <paper-icon-item>
+                                <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
+                                <paper-item-body two-line class="movie-data">
+                                    <div>[[result.Title]]</div>
+                                    <div secondary>[[result.Year]]</div>
+                                </paper-item-body>
+                            </paper-icon-item>
+                        </template>
+                    </iron-list>
+                </div>
+            </div>
+        </iron-pages>
+
+        <!--<paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>-->
+
+        <!--<paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">-->
+            <!--<paper-dialog-scrollable>-->
+                <!--<paper-input id="title" label="Title" required></paper-input>-->
+                <!--<paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>-->
+                <!--<div class="buttons">-->
+                    <!--<paper-button dialog-dismiss>Cancel</paper-button>-->
+                    <!--<paper-button dialog-confirm>Add</paper-button>-->
+                <!--</div>-->
+            <!--</paper-dialog-scrollable>-->
+        <!--</paper-dialog>-->
+
+        <!--<div id="loginItems">-->
+            <!--<h2></h2>-->
+            <!--<paper-button raised on-click="doLogin">Login with Google</paper-button>-->
+        <!--</div>-->
+
+        <!--<div id="movieSearchSection">-->
+            <!--<paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>-->
+            <!--<paper-button on-click="searchForMovie">Search</paper-button>-->
+            <!--<iron-list id="searchResults" items="[[searchResults.Search]]" as="result">-->
+            <!--<template>-->
+                <!--<paper-icon-item>-->
+                    <!--<img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />-->
+                    <!--<paper-item-body two-line class="movie-data">-->
+                        <!--<div>[[result.Title]]</div>-->
+                        <!--<div secondary>[[result.Year]]</div>-->
+                    <!--</paper-item-body>-->
+                <!--</paper-icon-item>-->
+            <!--</template>-->
+            <!--</iron-list>-->
+        <!--</div>-->
 
     </template>
 
@@ -149,6 +220,10 @@
                     },
                     searchResults: {
                         type: Object
+                    },
+                    sel: {
+                        type: Number,
+                        value: 0
                     }
                 };
             }
@@ -204,68 +279,21 @@
 
 
 <!--
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../bower_components/paper-tabs/paper-tabs-icons.html">
-<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
 
 
 <dom-module id="my-main-app">
   <template>
-    <style include="iron-flex iron-flex-alignment">
-    </style>
+
 
     <style>
       :host {
         display: inline-block;
       }
-      paper-card{
-        background-color: lightblue;
-        width: 99vw;
-      }
-      paper-tabs {
-        --paper-tabs-selection-bar-color: blue;
-      }
-      paper-tab{
-        margin-left: 20px;
-        margin-right: 20px;
-      }
+
     </style>
 
-    <paper-card elevation="5">
-        <div class="header layout horizontal center-justified">
-          <h1>Movie Review Application</h1>
-        </div>
-        <div class="content layout horizontal center-justified">
-          <paper-tabs selected="{{sel}}">
-            <paper-tab>Home</paper-tab>
-            <paper-tab>Leave a Review</paper-tab>
-            <paper-tab>Show Me Movies</paper-tab>
-          </paper-tabs>
-        </div>
-    </paper-card>
 
-
-    <iron-pages selected="[[sel]]">
-      <div id="HOME">
-        <h3>Home</h3>
-        <p>(Home content)</p>
-      </div>
-
-      <div id="REVIEW">
-        <h3>Reviews</h3>
-        <p>(Leave a review UI)</p>
-      </div>
-
-      <div id="MOVIES">
-        <h3>Movies</h3>
-        <p>(List of movies UI)</p>
-      </div>
-    </iron-pages>
 
 
   </template>
@@ -279,10 +307,7 @@
       static get is() { return 'my-main-app'; }
       static get properties() {
         return {
-            sel: {
-                type: Number,
-                value: 0
-            }
+
         };
       }
 

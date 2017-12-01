@@ -1,6 +1,6 @@
 {
   "name": "firebaseui",
-  "version": "2.4.1",
+  "version": "2.5.1",
   "description": "Javascript library for customizable UI on top of Firebase SDK",
   "main": [
     "./dist/firebaseui.js",
@@ -24,14 +24,13 @@
   "dependencies": {
     "firebase": "^4.1.2"
   },
-  "_release": "2.4.1",
+  "_release": "2.5.1",
   "_resolution": {
     "type": "version",
-    "tag": "v2.4.1",
-    "commit": "f8ce9c3237f7cf4b41c0320418f4ed930b2fb5b9"
+    "tag": "v2.5.1",
+    "commit": "7eb6c05c86817c21e5ff654bfad84cedcf1544a3"
   },
   "_source": "https://github.com/firebase/firebaseui-web.git",
   "_target": "^2.4.1",
-  "_originalSource": "firebaseui",
-  "_direct": true
+  "_originalSource": "firebaseui"
 }

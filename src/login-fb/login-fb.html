@@ -34,6 +34,8 @@
             }
             paper-button {
                 padding:5px;
+                margin-top: 13px;
+                margin-bottom: 13px;
                 background-color: deepskyblue;
             }
             paper-dialog paper-button {
@@ -51,8 +53,6 @@
 
             #searchResults {
                 margin-top: 15px;
-                padding-top: 15px;
-                padding-bottom: 15px;
                 width: 100%;
                 height: 600px;
                 border: solid 1px;
@@ -61,15 +61,19 @@
 
             .movie-thumbnail {
                 margin-top: 8px;
-                width: 200px;
-                height: 300px;
+                margin-bottom: 8px;
+                width: 100px;
+                height: 150px;
             }
 
             .movie-data {
                 margin-left: 10px;
             }
 
+            paper-icon-item {
+                --paper-item-icon-width: 100px;
 
+            }
 
             paper-card {
                 background-color: lightblue;
@@ -83,6 +87,20 @@
             paper-tab {
                 margin-left: 20px;
                 margin-right: 20px;
+            }
+
+            #starredMoviesList {
+                width: 50vw;
+                height: 600px;
+                border: solid 1px;
+                border-radius: 6px;
+            }
+
+            #movieReviewsList {
+                width: 50vw;
+                height: 600px;
+                border: solid 1px;
+                border-radius: 6px;
             }
         </style>
 
@@ -98,6 +116,7 @@
 
         <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
+        <!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
 
         <paper-card elevation="5">
             <div class="header layout horizontal center-justified">
@@ -117,14 +136,25 @@
             <div id="HOME">
                 <h3>Home</h3>
                 <div id="loginItems">
-                    <h2></h2>
                     <paper-button raised on-click="doLogin">Login with Google</paper-button>
+                    <div id="starredMovies">
+                        <h3>My Starred Movies</h3>
+                        <iron-list id="starredMoviesList"></iron-list>
+                    </div>
                 </div>
             </div>
 
             <div id="REVIEW">
-                <h3>Reviews</h3>
                 <paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
+                <h3>Movie Reviews Feed</h3>
+                <div id="movieReviews">
+                    <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
+                    <template>
+                        <b>[[review.title]]</b>
+                        <p>[[review.review]]</p>
+                    </template>
+                    </iron-list>
+                </div>
 
                 <paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
                     <paper-dialog-scrollable>
@@ -144,15 +174,15 @@
                     <paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
                     <paper-button on-click="searchForMovie">Search</paper-button>
                     <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
-                        <template>
-                            <paper-icon-item>
-                                <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
-                                <paper-item-body two-line class="movie-data">
-                                    <div>[[result.Title]]</div>
-                                    <div secondary>[[result.Year]]</div>
-                                </paper-item-body>
-                            </paper-icon-item>
-                        </template>
+                    <template>
+                        <paper-icon-item>
+                            <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
+                            <paper-item-body two-line class="movie-data">
+                                <div>[[result.Title]]</div>
+                                <div secondary>[[result.Year]]</div>
+                            </paper-item-body>
+                        </paper-icon-item>
+                    </template>
                     </iron-list>
                 </div>
             </div>

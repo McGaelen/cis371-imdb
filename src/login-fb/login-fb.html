@@ -105,16 +105,14 @@
         </style>
 
         <firebase-app id="myFireApp"
-                      name="imdb"
-                      api-key="AIzaSyB8kuGtgnbvN5imJSBltSfAT1nNbiNrhSU"
-                      auth-domain="cis371-semprj.firebaseapp.com"
-                      database-url="https://cis371-semprj.firebaseio.com"
-                      storage-bucket="cis371-semprj.appspot.com"
-                      messaging-sender-id="860536671337"
-                      project-id="cis371-semprj">
-        </firebase-app>
+			auth-domain="homework5-48fe3.firebaseapp.com"
+			database-url="https://homework5-48fe3.firebaseio.com"
+			api-key="AIzaSyDyOzJoTTpddTQWzr4j-FVXvqLxQJzwXjQ"
+			storage-bucket="homework5-48fe3.appspot.com"
+			messaging-sender-id="401542426153">
+		</firebase-app>
 
-        <firebase-auth id="fbauth" app-name="imdb" provider="google"></firebase-auth>
+        <firebase-auth id="fbauth" provider="google"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
         <!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
 
@@ -149,10 +147,12 @@
                 <h3>Movie Reviews Feed</h3>
                 <div id="movieReviews">
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
-                    <template>
-                        <b>[[review.title]]</b>
-                        <p>[[review.review]]</p>
-                    </template>
+						<template>
+						<paper-card heading="[[review.title]]">
+							<div class="layout vertical-align">
+								[[review.review]]
+							</div>	
+						</template>
                     </iron-list>
                 </div>
 
@@ -187,41 +187,6 @@
                 </div>
             </div>
         </iron-pages>
-
-        <!--<paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>-->
-
-        <!--<paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">-->
-            <!--<paper-dialog-scrollable>-->
-                <!--<paper-input id="title" label="Title" required></paper-input>-->
-                <!--<paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>-->
-                <!--<div class="buttons">-->
-                    <!--<paper-button dialog-dismiss>Cancel</paper-button>-->
-                    <!--<paper-button dialog-confirm>Add</paper-button>-->
-                <!--</div>-->
-            <!--</paper-dialog-scrollable>-->
-        <!--</paper-dialog>-->
-
-        <!--<div id="loginItems">-->
-            <!--<h2></h2>-->
-            <!--<paper-button raised on-click="doLogin">Login with Google</paper-button>-->
-        <!--</div>-->
-
-        <!--<div id="movieSearchSection">-->
-            <!--<paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>-->
-            <!--<paper-button on-click="searchForMovie">Search</paper-button>-->
-            <!--<iron-list id="searchResults" items="[[searchResults.Search]]" as="result">-->
-            <!--<template>-->
-                <!--<paper-icon-item>-->
-                    <!--<img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />-->
-                    <!--<paper-item-body two-line class="movie-data">-->
-                        <!--<div>[[result.Title]]</div>-->
-                        <!--<div secondary>[[result.Year]]</div>-->
-                    <!--</paper-item-body>-->
-                <!--</paper-icon-item>-->
-            <!--</template>-->
-            <!--</iron-list>-->
-        <!--</div>-->
-
     </template>
 
     <script>

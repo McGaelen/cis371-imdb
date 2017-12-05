@@ -136,7 +136,10 @@
             <div id="HOME">
                 <h3>Home</h3>
                 <div id="loginItems">
-                    <paper-button raised on-click="doLogin">Login with Google</paper-button>
+                    <paper-button raised on-click="login" hidden$="[[hideLI]]">Login with Google</paper-button>
+                    <paper-button raised on-click="logout" hidden$="[[hideLO]]">Logout</paper-button>
+                </div>
+                <div id="welcomeText"></div>
                     <div id="starredMovies">
                         <h3>My Starred Movies</h3>
                         <iron-list id="starredMoviesList"></iron-list>
@@ -223,6 +226,17 @@
                     sel: {
                         type: Number,
                         value: 0
+                    },
+                    user: {
+                        type: Object
+                    },
+                    hideLI: {
+                        type: Boolean,
+                        value: false
+                    },
+                    hideLO: {
+                        type: Boolean,
+                        value: true
                     }
                 };
             }
@@ -270,58 +284,27 @@
 				const key = ev.model.review.$key;
 				dbRef.ref('/imdb/'+key).set(null);
 				alert("Deleted: " + ev.model.review.title);
-			}
+            }
 
-            doLogin() {
+            login() {
                 this.$.fbauth.signInWithPopup().then( result => {
-                    alert("User is " + result.user.displayName);
-                    location.reload();
+                    this.user = result.user
+                    this.$.welcomeText.innerHTML = "Welcome, ".concat(this.user.displayName).concat("!");
+//                    alert("User is " + result.user.displayName);
+                    //location.reload();
                 });
+                this.hideLI = true;
+                this.hideLO = false;
+            }
+            
+            logout() {
+                this.$.fbauth.signOut();
+                this.$.welcomeText.innerHTML = "";
+                this.hideLI = false;
+                this.hideLO = true;
             }
 
         }
         window.customElements.define(LoginFb.is, LoginFb);
     </script>
 </dom-module>
-
-
-<!--
-
-
-
-<dom-module id="my-main-app">
-  <template>
-
-
-    <style>
-      :host {
-        display: inline-block;
-      }
-
-    </style>
-
-
-
-
-  </template>
-
-  <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    class MyMainApp extends Polymer.Element {
-      static get is() { return 'my-main-app'; }
-      static get properties() {
-        return {
-
-        };
-      }
-
-
-    }
-
-    window.customElements.define(MyMainApp.is, MyMainApp);
-  </script>
-</dom-module>
--->

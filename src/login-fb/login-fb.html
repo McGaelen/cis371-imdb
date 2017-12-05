@@ -264,6 +264,7 @@
             doLogin() {
                 this.$.fbauth.signInWithPopup().then( result => {
                     alert("User is " + result.user.displayName);
+                    location.reload();
                 });
             }
 

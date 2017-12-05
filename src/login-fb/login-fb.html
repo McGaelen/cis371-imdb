@@ -116,9 +116,8 @@
 
         <firebase-auth id="fbauth" provider="google"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
-        <!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
-
-        <paper-card elevation="5">
+		<!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
+		<paper-card elevation="5">
             <div class="header layout horizontal center-justified">
                 <h1>Movie Review Application</h1>
             </div>
@@ -142,7 +141,15 @@
                 <div id="welcomeText"></div>
                     <div id="starredMovies">
                         <h3>My Starred Movies</h3>
-                        <iron-list id="starredMoviesList"></iron-list>
+                        <iron-list id="starredMoviesList" items="{{favorites}}" as="favorite">
+						<template>
+						<paper-card heading="[[favorite.review]]">
+							[[favorite.review]]
+							<div class="layout horizontal end-justified style-scope lay-out">
+								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
+							</div>	
+						</template>
+						</iron-list>
                     </div>
                 </div>
             </div>
@@ -156,7 +163,7 @@
 						<paper-card heading="[[review.title]]">
 							[[review.review]]
 							<div class="layout horizontal end-justified style-scope lay-out">
-								
+								<div class="style-scope lay-out"><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
 								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
 							</div>	
 						</template>
@@ -278,6 +285,14 @@
                     this.$.review.validate();
                 }
             }
+			
+			likeMe(ev){
+				const dbRef = this.$.myFireApp.app.database();
+				const user = firebase.auth().currentUser.uid;
+				console.log(user);
+				const key = ev.model.review.$key;
+				dbRef.ref('/imdb/'+key +'/'+user).update({favorites : user});
+			}
 			
 			deleteMe(ev) {
 				const dbRef = this.$.myFireApp.app.database();

@@ -116,8 +116,6 @@
 
         <firebase-auth id="fbauth" provider="google"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
-        <firebase-query id="query2" path="/[[firebase.auth().currentUser.G]]" data="{{favorites}}"></firebase-query>
-        
 		<!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
 		<paper-card elevation="5">
             <div class="header layout horizontal center-justified">
@@ -276,9 +274,10 @@
 			
 			likeMe(ev){
 				const dbRef = this.$.myFireApp.app.database();
-				const user = firebase.auth().currentUser.G;
-				console.log(this.$.review);
-				dbRef.ref('/'+ user).push().set({review : ev.model.review.$key});
+				const user = firebase.auth().currentUser.uid;
+				console.log(user);
+				const key = ev.model.review.$key;
+				dbRef.ref('/imdb/'+key +'/'+user).update({favorites : user});
 			}
 			
 			deleteMe(ev) {

@@ -41,7 +41,7 @@
 		</firebase-app>
 
         <firebase-auth id="fbauth" provider="google" signed-in="{{signedIn}}" user="{{user}}"></firebase-auth>
-        <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
+        <firebase-query id="query4" path="/imdb" data="{{qryData}}"></firebase-query>
 		<firebase-query id="query2" path="/[[user.uid]]" data="{{favorites}}"></firebase-query>
 
         <div id="loginItems">
@@ -58,47 +58,68 @@
                 <paper-tabs selected="{{sel}}">
                     <paper-tab>Home</paper-tab>
                     <paper-tab>Leave a Review</paper-tab>
-                    <paper-tab>Show Me Movies</paper-tab>
+                    <paper-tab>Search Movies</paper-tab>
                 </paper-tabs>
             </div>
         </div>
 
         <iron-pages selected="[[sel]]">
             <div id="HOME" class="tab-body">
-                    <div id="starredMovies">
-                        <h3 class="tab-title">My Starred Movies</h3>
-                        <div hidden$="[[signedIn]]">Sign In to view your Starred Movies</div>
+                <div id="starredMovies">
+                    <h3 class="tab-title">My Starred Movies</h3>
+                    <div hidden$="[[signedIn]]">Sign In to view your Starred Movies</div>
                         <iron-list id="starredMoviesList" items="{{favorites}}" as="favorite">
-						<template>
-                            <paper-item>
-                                <paper-item-body>
-                                    <span class="style-scope lay-out"></span>
-                                    <div>[[favorite.title]]&nbsp;<iron-icon on-click="deleteFavorite" icon="icons:delete"></iron-icon></div>
-                                </paper-item-body>
-                            </paper-item>
-						</template>
-						</iron-list>
+                            <template>
+                                <paper-icon-item>
+                                    <img class="movie-thumbnail" slot="item-icon" src="[[favorite.poster]]" alt="Poster for [[favorite.title]]" />
+                                    <paper-item-body two-line class="movie-data">
+                                        <div>[[favorite.title]]&nbsp;<iron-icon on-click="deleteFavorite" icon="icons:delete"></iron-icon>
+                                        <div secondary>[[favorite.year]]</div>
+                                    </paper-item-body>
+                                </paper-icon-item>
+                            </template>
+                        </iron-list>
                     </div>
                 </div>
             </div>
 
+
             <div id="REVIEW" class="tab-body">
-                <div class="layout horizontal">
+                <div>
                     <h3 class="tab-title">Movie Reviews Feed</h3>
-                    &nbsp;
                     <paper-button raised class="indigo" id="addBtn" on-click="addReview" disabled="[[!signedIn]]">Review a Movie</paper-button>
+                    <div class="layout horizontal">
+                        <paper-button raised class="indigo" on-click="searchForReview" disabled="[[!signedIn]]">Search</paper-button>
+                        <paper-input id="reviewSearch" class="flex" label="Search for reviews by movie title" value="{{reviewSearchTerm}}"></paper-input>
+                    </div>
                 </div>
                 <div class="align self-center" hidden$="[[signedIn]]">Sign In to View and Leave Reviews</div>
                 <div id="movieReviews">
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
+                        <h4>All Movie Reviews</h4>
 						<template>
                         <paper-item>
                             <paper-item-body two-line>
-                                <div>[[review.title]]&nbsp;<iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
+                                <div>[[review.title]]&nbsp;</div>
                                 <div secondary>[[review.review]]</div>
                             </paper-item-body>
                         </paper-item>
 						</template>
+                    </iron-list>
+                </div>
+
+                <div id="movieReviewsSearch">
+
+                    <iron-list id="movieReviewsListSearch" items="{{searchData}}" as="review">
+                        <h4>Movie Reviews For Titles Containing "[[reviewSearchTerm]]"</h4>
+                        <template>
+                            <paper-item>
+                                <paper-item-body two-line>
+                                    <div>[[review.title]]</div>
+                                    <div secondary>[[review.review]]</div>
+                                </paper-item-body>
+                            </paper-item>
+                        </template>
                     </iron-list>
                 </div>
 
@@ -119,7 +140,7 @@
                 <span hidden$="[[signedIn]]">Sign In to search for movies</span>
                 <div id="movieSearchSection">
                     <div class="layout horizontal">
-                        <paper-button on-click="searchForMovie" disabled="[[!signedIn]]">Search</paper-button>
+                        <paper-button raised class="indigo" on-click="searchForMovie" disabled="[[!signedIn]]">Search</paper-button>
                         &nbsp;
                         <paper-input id="movieSearch" class="flex" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
                     </div>
@@ -145,7 +166,7 @@
          * @polymer
          */
         class MovieDB extends Polymer.Element {
-            static get is() { return 'movie-db'; }
+            static get is() {return 'movie-db'; }
             static get properties() {
                 return {
                     prop1: {
@@ -176,9 +197,18 @@
                     signedIn: {
                         type: Boolean
                     },
-                    user: {
-                        type: Object
+                    reviewSearchTerm: {
+                        type: String,
+                        value: ""
+                    },
+                    searchData: {
+
+                    },
+                    movieReviewSearched: {
+                        type: Boolean,
+                        value: false
                     }
+
                 };
             }
 
@@ -225,6 +255,8 @@
 				const user = firebase.auth().currentUser.uid;
 				const key = ev.model.result.imdbID;
 				dbRef.ref('/'+user+'/'+key).update({title : ev.model.result.Title });
+                dbRef.ref('/'+user+'/'+key).update({poster : ev.model.result.Poster });
+                dbRef.ref('/'+user+'/'+key).update({year : ev.model.result.Year });
 			}
 
 			deleteMe(ev) {
@@ -251,6 +283,37 @@
             logout() {
                 this.$.fbauth.signOut();
                 location.reload();
+            }
+
+            searchForReview(){
+                var movRev = Polymer.dom(this.root).querySelector('#movieReviews');
+                var movRevS = Polymer.dom(this.root).querySelector('#movieReviewsSearch');
+                if(this.reviewSearchTerm == "")
+                {
+                    $(movRev).show();
+                    $(movRevS).hide();
+                }
+                else
+                {
+                    $(movRev).hide();
+                    $(movRevS).show();
+                }
+                console.log(this.reviewSearchTerm);
+                this.movieReviewSearched = true;
+                this.searchData = this.$.query4.data.slice();
+                console.log(this.searchData);
+                for(var i in this.searchData)
+                {
+                    if(this.searchData[i].title.toLowerCase().includes(this.reviewSearchTerm.toLowerCase()) == false)
+                    {
+                        delete this.searchData[i];
+                    }
+                }
+                console.log(this.searchData);
+                for(var j in this.searchData)
+                {
+                    console.log(this.searchData[j].title);
+                }
             }
 
         }

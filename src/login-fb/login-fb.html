@@ -15,6 +15,7 @@
 <link rel="import" href="../../bower_components/paper-styles/color.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs-icons.html">
@@ -76,11 +77,11 @@
                         </div>
                         <iron-list id="starredMoviesList" items="{{favorites}}" as="favorite">
 						<template>
-						<paper-card heading="[[favorite.title]]">
-							[[favorite.review]]
-							<div class="layout horizontal end-justified style-scope lay-out">
-								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
-							</div>
+                            <paper-item-body two-line>
+                                <div>[[favorite.title]]</div>
+                                <div secondary>[[favorite.review]]</div>
+								<span class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></span>
+                            </paper-item-body>
 						</template>
 						</iron-list>
                     </div>
@@ -96,12 +97,16 @@
                 <div id="movieReviews">
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
 						<template>
-						<paper-card class="movie-review" heading="[[review.title]]">
-							<div class="card-content">[[review.review]]</div>
-							<div class="layout horizontal end-justified style-scope lay-out">
-								<div class="style-scope lay-out"><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
-								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
-							</div>
+                        <paper-item>
+                            <paper-item-body two-line>
+                                <div>[[review.title]]</div>
+                                <div secondary>[[review.review]]</div>
+                                <div class="layout horizontal">
+                                    <span class="style-scope lay-out"><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></span>
+								    <span class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></span>
+                                </div>
+                            </paper-item-body>
+                        </paper-item>
 						</template>
                     </iron-list>
                 </div>

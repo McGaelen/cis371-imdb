@@ -57,8 +57,8 @@
             <div class="content layout horizontal center-justified">
                 <paper-tabs selected="{{sel}}">
                     <paper-tab>Home</paper-tab>
-                    <paper-tab>Leave a Review</paper-tab>
-                    <paper-tab>Search Movies</paper-tab>
+                    <paper-tab>Read Reviews</paper-tab>
+                    <paper-tab>Search Movies/Leave a Review</paper-tab>
                 </paper-tabs>
             </div>
         </div>
@@ -87,7 +87,6 @@
             <div id="REVIEW" class="tab-body">
                 <div>
                     <h3 class="tab-title">Movie Reviews Feed</h3>
-                    <paper-button raised class="indigo" id="addBtn" on-click="addReview" disabled="[[!signedIn]]">Review a Movie</paper-button>
                     <div class="layout horizontal">
                         <paper-button raised class="indigo" on-click="searchForReview" disabled="[[!signedIn]]">Search</paper-button>
                         <paper-input id="reviewSearch" class="flex" label="Search for reviews by movie title" value="{{reviewSearchTerm}}"></paper-input>
@@ -99,7 +98,7 @@
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
                         <template>
                             <div class="card">
-                            <paper-card class="movie-review" heading="[[review.title]]">
+                            <paper-card class="movie-review" heading="[[review.title]] ([[review.year]])">
                                 <div class="card-content">[[review.review]]</div>
                                 <div class="layout horizontal end-justified style-scope lay-out">
                                     <div class="style-scope lay-out"></div>
@@ -115,7 +114,7 @@
                     <iron-list id="movieReviewsListSearch" items="{{searchData}}" as="review">
                         <template>
                             <div class="card">
-                                <paper-card class="movie-review" heading="[[review.title]]">
+                                <paper-card class="movie-review" heading="[[review.title]] ([[review.year]])">
                                     <div class="card-content">[[review.review]]</div>
                                     <div class="layout horizontal end-justified style-scope lay-out">
                                         <div class="style-scope lay-out"></div>
@@ -126,16 +125,6 @@
                     </iron-list>
                 </div>
 
-                <paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
-                    <paper-dialog-scrollable>
-                        <paper-input id="title" label="Title" required></paper-input>
-                        <paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
-                        <div class="buttons">
-                            <paper-button dialog-dismiss>Cancel</paper-button>
-                            <paper-button dialog-confirm>Add</paper-button>
-                        </div>
-                    </paper-dialog-scrollable>
-                </paper-dialog>
             </div>
 
             <div id="MOVIES" class="tab-body">
@@ -151,14 +140,26 @@
                     <template>
                         <paper-icon-item>
                             <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
-                            <paper-item-body two-line class="movie-data">
-                                <div>[[result.Title]]&nbsp;<iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
+                            <paper-item-body three-line class="movie-data">
+                                <div>[[result.Title]] <iron-icon on-click="likeMe" icon="icons:star"></iron-icon>
+                                </div>
                                 <div secondary>[[result.Year]]</div>
+                                <div><paper-button raised class="indigo" id="addBtn" on-click="addReview" disabled="[[!signedIn]]" title="[[result.Title]], [[result.Year]]">Leave a Review</paper-button></div>
                             </paper-item-body>
                         </paper-icon-item>
                     </template>
                     </iron-list>
                 </div>
+
+                <paper-dialog id="newReview" on-iron-overlay-closed="diaClosed">
+                    <paper-dialog-scrollable>
+                        <paper-textarea id="review" label="Review" max-rows="4" required></paper-textarea>
+                        <div class="buttons">
+                            <paper-button dialog-dismiss>Cancel</paper-button>
+                            <paper-button dialog-confirm>Add</paper-button>
+                        </div>
+                    </paper-dialog-scrollable>
+                </paper-dialog>
             </div>
         </iron-pages>
     </template>
@@ -210,6 +211,12 @@
                     movieReviewSearched: {
                         type: Boolean,
                         value: false
+                    },
+                    title: {
+
+                    },
+                    year: {
+
                     }
 
                 };
@@ -234,21 +241,24 @@
                 }
             }
 
-            addReview() {
+            addReview(e) {
                 this.$.newReview.open();
+                var args = e.target.getAttribute('title').split(',');
+                this.title = args[0];
+                this.year = args[1];
+                console.log(args[0]);
+                console.log(args[1]);
             }
 
             diaClosed() {
-                console.log(this.$.title.value);
-                if (this.$.newReview.closingReason.confirmed && this.$.review.value!=null && this.$.title.value!=null) {
-                    alert ("You entered a review for " + this.$.title.value);
+                if (this.$.newReview.closingReason.confirmed && this.$.review.value!=null) {
+                    alert ("You entered a review for " + this.title);
                     const dbRef = this.$.myFireApp.app.database();
-                    dbRef.ref('/imdb').push().set({ title : this.$.title.value,
-                        review: this.$.review.value });
+                    dbRef.ref('/imdb').push().set({ title : this.title,
+                        review: this.$.review.value, year: this.year });
                 }
                 else if (this.$.newReview.closingReason.confirmed ){
                     this.$.newReview.open();
-                    this.$.title.validate();
                     this.$.review.validate();
                 }
             }

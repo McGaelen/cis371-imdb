@@ -221,7 +221,13 @@
 
                 };
             }
-
+            
+            ready(){
+                super.ready();
+                var movRevS = Polymer.dom(this.root).querySelector('#movieReviewsSearch');
+                $(movRevS).hide();
+            }
+            
             searchForMovie() {
                 if (this.$.movieSearch.value) {
                     console.log(`searching for movie "${this.$.movieSearch.value}"`);

@@ -326,9 +326,8 @@
 
             login() {
                 this.$.fbauth.signInWithPopup().then( result => {
-                    location.reload();
+					location.reload();	
                 });
-				this.loadFavs();
             }
 
             logout() {

@@ -1,0 +1,131 @@
+:host {
+    display: block;
+    font-family: 'Roboto', sans-serif;
+    --paper-input-container-input: {
+        font-size: 20px;
+    };
+    --paper-card-content: {
+        margin-left: 4px;
+        margin-right: 6px;
+    };
+}
+
+.header {
+    background-color: #00a56c;
+    color: #ffffff;
+    border-bottom: solid 1px #00a56c;
+
+    --paper-tabs-selection-bar-color: #ffffff;
+    --paper-tabs: {
+        background-color: #00a56c;
+        color: #ffffff;
+    };
+    --paper-tab-ink: #eeeeee;
+}
+
+#loginItems {
+    position: absolute;
+    top: 13px;
+    left: 5px;
+}
+
+#loginItems paper-button {
+    background-color: #ffffff;
+    color: #000000;
+    --paper-button-ink-color: #00a56c;
+}
+
+#welcomeText {
+    margin-left: 7px;
+    color: #ffffff;
+}
+
+.tab-body {
+    padding: 15px;
+    /*background-color: #e6fff6;*/
+}
+
+.tab-title {
+    margin-right: 10px;
+}
+
+paper-button {
+    padding:5px;
+    margin-top: 13px;
+    margin-bottom: 13px;
+    background-color: #00a56c;
+    color: #ffffff;
+}
+
+paper-button[disabled] {
+    background-color: #80ffd0;
+    color: #999999;
+    border: solid 1px #dddddd;
+    box-shadow: 20px #999999;
+}
+
+paper-dialog paper-button {
+    padding: 5px;
+    background-color: white;
+}
+
+paper-input {
+    --paper-input-container-focus-color: #00a56c;
+}
+
+#movieSearchSection {
+    /*margin: 10px;*/
+}
+
+#moiveSearch {
+    margin-left: 10px;
+}
+
+#searchResults {
+    margin-top: 15px;
+    width: 100%;
+    height: 600px;
+    border: solid 1px;
+    border-radius: 6px;
+}
+
+.movie-thumbnail {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    width: 100px;
+    height: 150px;
+}
+
+.movie-data {
+    margin-left: 10px;
+}
+
+paper-icon-item {
+    --paper-item-icon-width: 100px;
+
+}
+
+paper-tab {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#starredMoviesList {
+    width: 50vw;
+    height: 600px;
+    border: solid 1px;
+    border-radius: 6px;
+}
+
+#movieReviewsList {
+    width: 100%;
+    height: 600px;
+    /*border: solid 1px;*/
+    /*border-radius: 6px;*/
+}
+
+.movie-review {
+    margin-bottom: 15px;
+    background-color: #ccffec;
+    width: 100%;
+}

@@ -21,90 +21,15 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/shadycss/apply-shim.html">
 <script src="../../node_modules/jquery/dist/jquery.js"></script>
 
-<dom-module id="login-fb">
+<dom-module id="movie-db">
+    <link rel="import" type="css" href="login-fb.css">
+
     <template>
-        <style include="iron-flex iron-flex-alignment">
-        </style>
-        <style>
-            :host {
-                display: block;
-                --paper-input-container-input: {
-                    font-size: 20px;
-                };
-            }
-            paper-button {
-                padding:5px;
-                margin-top: 13px;
-                margin-bottom: 13px;
-                background-color: deepskyblue;
-            }
-            paper-dialog paper-button {
-                padding:5px;
-                background-color: white;
-            }
+        <style include="iron-flex iron-flex-alignment"></style>
 
-            #movieSearchSection {
-                margin: 10px;
-            }
-
-            #movieSearch {
-                font-size: 20px;
-            }
-
-            #searchResults {
-                margin-top: 15px;
-                width: 100%;
-                height: 600px;
-                border: solid 1px;
-                border-radius: 6px;
-            }
-
-            .movie-thumbnail {
-                margin-top: 8px;
-                margin-bottom: 8px;
-                width: 100px;
-                height: 150px;
-            }
-
-            .movie-data {
-                margin-left: 10px;
-            }
-
-            paper-icon-item {
-                --paper-item-icon-width: 100px;
-
-            }
-
-            paper-card {
-                background-color: lightblue;
-                width: 99vw;
-            }
-
-            paper-tabs {
-                --paper-tabs-selection-bar-color: blue;
-            }
-
-            paper-tab {
-                margin-left: 20px;
-                margin-right: 20px;
-            }
-
-            #starredMoviesList {
-                width: 50vw;
-                height: 600px;
-                border: solid 1px;
-                border-radius: 6px;
-            }
-
-            #movieReviewsList {
-                width: 50vw;
-                height: 600px;
-                border: solid 1px;
-                border-radius: 6px;
-            }
-        </style>
 
         <firebase-app id="myFireApp"
 			auth-domain="homework5-48fe3.firebaseapp.com"
@@ -119,7 +44,15 @@
 		<firebase-query id="query2" path="/imdb/[[fbauth.user.uid]]" data="{{favorites}}"></firebase-query>
 		<!--this.$.query2.setAttribute("path", "/imdb/"+firebase.auth().currentUser.uid);
 		<!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
-		<paper-card elevation="5">
+
+        <div id="loginItems">
+            <paper-button raised on-click="login" hidden$="[[signedIn]]">Login with Google</paper-button>
+            <paper-button raised on-click="logout" hidden$="[[!signedIn]]">Logout</paper-button>
+            <div id="welcomeText" hidden$="[[!signedIn]]">Welcome, [[user.displayName]]!</div>
+        </div>
+
+
+		<div class="header">
             <div class="header layout horizontal center-justified">
                 <h1>Movie Review Application</h1>
             </div>
@@ -130,20 +63,17 @@
                     <paper-tab>Show Me Movies</paper-tab>
                 </paper-tabs>
             </div>
-        </paper-card>
+        </div>
 
 
         <iron-pages selected="[[sel]]">
-            <div id="HOME">
-                <h3>Home</h3>
-                <div id="loginItems">
-                    <paper-button raised on-click="login" hidden$="[[signedIn]]">Login with Google</paper-button>
-                    <paper-button raised on-click="logout" hidden$="[[!signedIn]]">Logout</paper-button>
-                </div>
-                <div id="welcomeText" hidden$="[[!signedIn]]">Welcome, [[user.displayName]]!</div>
+            <div id="HOME" class="tab-body">
                     <div id="starredMovies">
-                        <h3>My Starred Movies</h3>
-						<paper-button raised on-click="loadFavs">Load Favorites</paper-button>
+                        <div class="layout horizontal">
+                            <h3 class="tab-title">My Starred Movies</h3>
+						    <paper-button raised on-click="loadFavs" disabled="[[!signedIn]]">Load Favorites</paper-button>
+                            <div class="align self-center" hidden$="[[signedIn]]">Sign In to Load Favorites</div>
+                        </div>
                         <iron-list id="starredMoviesList" items="{{favorites}}" as="favorite">
 						<template>
 						<paper-card heading="[[favorite.title]]">
@@ -157,14 +87,17 @@
                 </div>
             </div>
 
-            <div id="REVIEW">
-                <paper-button raised class="indigo" id="addBtn" on-click="addReview">Review a Movie</paper-button>
-                <h3>Movie Reviews Feed</h3>
+            <div id="REVIEW" class="tab-body">
+                <div class="layout horizontal">
+                    <h3 class="tab-title">Movie Reviews Feed</h3>
+                    <paper-button raised class="indigo" id="addBtn" on-click="addReview" disabled="[[!signedIn]]">Review a Movie</paper-button>
+                    <div class="align self-center" hidden$="[[signedIn]]">Sign In to View and Leave Reviews</div>
+                </div>
                 <div id="movieReviews">
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
 						<template>
-						<paper-card heading="[[review.title]]">
-							[[review.review]]
+						<paper-card class="movie-review" heading="[[review.title]]">
+							<div class="card-content">[[review.review]]</div>
 							<div class="layout horizontal end-justified style-scope lay-out">
 								<div class="style-scope lay-out"><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
 								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
@@ -185,12 +118,14 @@
                 </paper-dialog>
             </div>
 
-            <div id="MOVIES">
-                <h3>Movies</h3>
+            <div id="MOVIES" class="tab-body">
+                <h3>Search For Movies</h3>
+                <span hidden$="[[signedIn]]">Sign In to search for movies</span>
                 <div id="movieSearchSection">
-                    <paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
-                    <paper-button on-click="searchForMovie" disabled="[[!signedIn]]">Search</paper-button>
-                    <span hidden$="[[signedIn]]">Sign In to search for movies</span>
+                    <div class="layout horizontal">
+                        <paper-button on-click="searchForMovie" disabled="[[!signedIn]]">Search</paper-button>
+                        <paper-input id="movieSearch" class="flex" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
+                    </div>
                     <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
                     <template>
                         <paper-icon-item>
@@ -212,8 +147,8 @@
          * @customElement
          * @polymer
          */
-        class LoginFb extends Polymer.Element {
-            static get is() { return 'login-fb'; }
+        class MovieDB extends Polymer.Element {
+            static get is() { return 'movie-db'; }
             static get properties() {
                 return {
                     prop1: {
@@ -241,19 +176,11 @@
                     user: {
                         type: Object
                     },
-                    hideLI: {
-                        type: Boolean,
-                        value: false
-                    },
-                    hideLO: {
-                        type: Boolean,
-                        value: true
-                    },
                     signedIn: {
                         type: Boolean
                     },
                     user: {
-                        type: Object,
+                        type: Object
                     }
                 };
             }
@@ -327,7 +254,7 @@
 
             login() {
                 this.$.fbauth.signInWithPopup().then( result => {
-					location.reload();	
+					location.reload();
                 });
             }
 
@@ -337,6 +264,6 @@
             }
 
         }
-        window.customElements.define(LoginFb.is, LoginFb);
+        window.customElements.define(MovieDB.is, MovieDB);
     </script>
 </dom-module>

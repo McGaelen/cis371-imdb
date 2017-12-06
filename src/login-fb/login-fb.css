@@ -63,7 +63,7 @@ paper-button[disabled] {
     box-shadow: 20px #999999;
 }
 
-paper-input {
+paper-input, paper-textarea {
     --paper-input-container-focus-color: #00a56c;
 }
 

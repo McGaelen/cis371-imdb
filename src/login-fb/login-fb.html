@@ -80,7 +80,7 @@
                             <paper-item-body two-line>
                                 <div>[[favorite.title]]</div>
                                 <div secondary>[[favorite.review]]</div>
-								<span class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></span>
+								<span class="style-scope lay-out"><iron-icon on-click="deleteFavorite" icon="icons:delete"></iron-icon></span>
                             </paper-item-body>
 						</template>
 						</iron-list>
@@ -102,7 +102,6 @@
                                 <div>[[review.title]]</div>
                                 <div secondary>[[review.review]]</div>
                                 <div class="layout horizontal">
-                                    <span class="style-scope lay-out"><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></span>
 								    <span class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></span>
                                 </div>
                             </paper-item-body>
@@ -138,8 +137,11 @@
                             <paper-item-body two-line class="movie-data">
                                 <div>[[result.Title]]</div>
                                 <div secondary>[[result.Year]]</div>
+								<div><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
+
                             </paper-item-body>
                         </paper-icon-item>
+
                     </template>
                     </iron-list>
                 </div>
@@ -231,25 +233,24 @@
 			likeMe(ev){
 				const dbRef = this.$.myFireApp.app.database();
 				const user = firebase.auth().currentUser.uid;
-				console.log(user);
-				const key = ev.model.review.$key;
-				dbRef.ref('/'+user+'/'+key).update({title : ev.model.review.title,
-                        review: ev.model.review.review });
+				const key = ev.model.result.imdbID;
+				dbRef.ref('/'+user+'/'+key).update({title : ev.model.result.Title });
 			}
 
 			deleteMe(ev) {
 				const dbRef = this.$.myFireApp.app.database();
-				const key = ev.model.review.$key;
+				const key = ev.model.result.$key;
 				dbRef.ref('/imdb/'+key).set(null);
 				alert("Deleted: " + ev.model.review.title);
             }
 
 			deleteFavorite(ev) {
+				console.log("Hi");
 				const dbRef = this.$.myFireApp.app.database();
-				const key = ev.model.review.$key;
+				const key = ev.model.favorite.$key;
 				const user = firebase.auth().currentUser.uid;
-				dbRef.ref('/imdb/'+key+'/'+user).set(null);
-				alert("Deleted: " + ev.model.review.title);
+				dbRef.ref('/'+user+'/'+key).set(null);
+				console.log("Deleted: " + ev.model.favorite.title);
             }
 
 			loadFavs() {

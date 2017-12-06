@@ -301,7 +301,7 @@
 				const user = firebase.auth().currentUser.uid;
 				console.log(user);
 				const key = ev.model.review.$key;
-				dbRef.ref('/imdb/'+user+'/'+key).update({title : ev.model.review.title,
+				dbRef.ref('/'+user+'/'+key).update({title : ev.model.review.title,
                         review: ev.model.review.review });
 			}
 
@@ -321,15 +321,14 @@
             }
 
 			loadFavs() {
-				this.$.query2.path = "/imdb/" + this.$.fbauth.user.uid;
+				this.$.query2.path = "/" + this.$.fbauth.user.uid;
 				console.log(this.$.query2.path);
 			}
 
             login() {
                 this.$.fbauth.signInWithPopup().then( result => {
-                    location.reload();
+					location.reload();	
                 });
-				this.loadFavs();
             }
 
             logout() {

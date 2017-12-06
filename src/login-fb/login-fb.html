@@ -114,7 +114,7 @@
 			messaging-sender-id="401542426153">
 		</firebase-app>
 
-        <firebase-auth id="fbauth" provider="google"></firebase-auth>
+        <firebase-auth id="fbauth" provider="google" signed-in="{{signedIn}}" user="{{user}}"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
 		<firebase-query id="query2" path="/imdb/[[fbauth.user.uid]]" data="{{favorites}}"></firebase-query>
 		<!--this.$.query2.setAttribute("path", "/imdb/"+firebase.auth().currentUser.uid);
@@ -137,10 +137,10 @@
             <div id="HOME">
                 <h3>Home</h3>
                 <div id="loginItems">
-                    <paper-button raised on-click="login" hidden$="[[hideLI]]">Login with Google</paper-button>
-                    <paper-button raised on-click="logout" hidden$="[[hideLO]]">Logout</paper-button>
+                    <paper-button raised on-click="login" hidden$="[[signedIn]]">Login with Google</paper-button>
+                    <paper-button raised on-click="logout" hidden$="[[!signedIn]]">Logout</paper-button>
                 </div>
-                <div id="welcomeText"></div>
+                <div id="welcomeText" hidden$="[[!signedIn]]">Welcome, [[user.displayName]]!</div>
                     <div id="starredMovies">
                         <h3>My Starred Movies</h3>
 						<paper-button raised on-click="loadFavs">Load Favorites</paper-button>
@@ -148,9 +148,9 @@
 						<template>
 						<paper-card heading="[[favorite.title]]">
 							[[favorite.review]]
-							<div class="layout horizontal end-justified style-scope lay-out">
-								<div class="style-scope lay-out"><iron-icon on-click="deleteFavorite" icon="icons:delete"></iron-icon></div>
-							</div>	
+							<div class="layout horizontal end-justified style-scope lay-out">	
+								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
+							</div>
 						</template>
 						</iron-list>
                     </div>
@@ -168,7 +168,7 @@
 							<div class="layout horizontal end-justified style-scope lay-out">
 								<div class="style-scope lay-out"><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
 								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
-							</div>	
+							</div>
 						</template>
                     </iron-list>
                 </div>
@@ -247,6 +247,12 @@
                     hideLO: {
                         type: Boolean,
                         value: true
+                    },
+                    signedIn: {
+                        type: Boolean
+                    },
+                    user: {
+                        type: Object,
                     }
                 };
             }
@@ -288,7 +294,7 @@
                     this.$.review.validate();
                 }
             }
-			
+
 			likeMe(ev){
 				const dbRef = this.$.myFireApp.app.database();
 				const user = firebase.auth().currentUser.uid;
@@ -297,7 +303,7 @@
 				dbRef.ref('/imdb/'+user+'/'+key).update({title : ev.model.review.title,
                         review: ev.model.review.review });
 			}
-			
+
 			deleteMe(ev) {
 				const dbRef = this.$.myFireApp.app.database();
 				const key = ev.model.review.$key;
@@ -320,21 +326,13 @@
 
             login() {
                 this.$.fbauth.signInWithPopup().then( result => {
-                    this.user = result.user
-                    this.$.welcomeText.innerHTML = "Welcome, ".concat(this.user.displayName).concat("!");
-//                    alert("User is " + result.user.displayName);
-                    //location.reload();
+                    location.reload();
                 });
-                this.hideLI = true;
-                this.hideLO = false;
 				this.loadFavs();
             }
-            
+
             logout() {
                 this.$.fbauth.signOut();
-                this.$.welcomeText.innerHTML = "";
-                this.hideLI = false;
-                this.hideLO = true;
             }
 
         }

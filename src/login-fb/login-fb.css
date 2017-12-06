@@ -98,7 +98,7 @@ paper-icon-item {
 }
 
 paper-item {
-    margin-bottom: 20px;
+    margin-top: 20px;
 
     --paper-item-focused: {
         background-color: #ffffff
@@ -113,8 +113,10 @@ paper-item-body {
 }
 
 paper-tab {
-    margin-left: 20px;
-    margin-right: 20px;
+    padding-left: 25px;
+    padding-right: 25px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #starredMoviesList {
@@ -132,4 +134,10 @@ paper-tab {
     margin-bottom: 15px;
     background-color: #ccffec;
     width: 100%;
+}
+
+iron-list {
+    --iron-list-items-container: {
+        overflow: hidden;
+    };
 }

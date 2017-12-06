@@ -42,16 +42,13 @@
 
         <firebase-auth id="fbauth" provider="google" signed-in="{{signedIn}}" user="{{user}}"></firebase-auth>
         <firebase-query id="query" path="/imdb" data="{{qryData}}"></firebase-query>
-		<firebase-query id="query2" path="/imdb/[[fbauth.user.uid]]" data="{{favorites}}"></firebase-query>
-		<!--this.$.query2.setAttribute("path", "/imdb/"+firebase.auth().currentUser.uid);
-		<!-- Probably need another firebase-query to get the currently logged in user's starred movies -->
+		<firebase-query id="query2" path="/[[user.uid]]" data="{{favorites}}"></firebase-query>
 
         <div id="loginItems">
             <paper-button raised on-click="login" hidden$="[[signedIn]]">Login with Google</paper-button>
             <paper-button raised on-click="logout" hidden$="[[!signedIn]]">Logout</paper-button>
             <div id="welcomeText" hidden$="[[!signedIn]]">Welcome, [[user.displayName]]!</div>
         </div>
-
 
 		<div class="header">
             <div class="header layout horizontal center-justified">
@@ -66,22 +63,19 @@
             </div>
         </div>
 
-
         <iron-pages selected="[[sel]]">
             <div id="HOME" class="tab-body">
                     <div id="starredMovies">
-                        <div class="layout horizontal">
-                            <h3 class="tab-title">My Starred Movies</h3>
-						    <paper-button raised on-click="loadFavs" disabled="[[!signedIn]]">Load Favorites</paper-button>
-                            <div class="align self-center" hidden$="[[signedIn]]">Sign In to Load Favorites</div>
-                        </div>
+                        <h3 class="tab-title">My Starred Movies</h3>
+                        <div hidden$="[[signedIn]]">Sign In to view your Starred Movies</div>
                         <iron-list id="starredMoviesList" items="{{favorites}}" as="favorite">
 						<template>
-                            <paper-item-body two-line>
-                                <div>[[favorite.title]]</div>
-                                <div secondary>[[favorite.review]]</div>
-								<span class="style-scope lay-out"><iron-icon on-click="deleteFavorite" icon="icons:delete"></iron-icon></span>
-                            </paper-item-body>
+                            <paper-item>
+                                <paper-item-body>
+                                    <span class="style-scope lay-out"></span>
+                                    <div>[[favorite.title]]&nbsp;<iron-icon on-click="deleteFavorite" icon="icons:delete"></iron-icon></div>
+                                </paper-item-body>
+                            </paper-item>
 						</template>
 						</iron-list>
                     </div>
@@ -91,19 +85,17 @@
             <div id="REVIEW" class="tab-body">
                 <div class="layout horizontal">
                     <h3 class="tab-title">Movie Reviews Feed</h3>
+                    &nbsp;
                     <paper-button raised class="indigo" id="addBtn" on-click="addReview" disabled="[[!signedIn]]">Review a Movie</paper-button>
-                    <div class="align self-center" hidden$="[[signedIn]]">Sign In to View and Leave Reviews</div>
                 </div>
+                <div class="align self-center" hidden$="[[signedIn]]">Sign In to View and Leave Reviews</div>
                 <div id="movieReviews">
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
 						<template>
                         <paper-item>
                             <paper-item-body two-line>
-                                <div>[[review.title]]</div>
+                                <div>[[review.title]]&nbsp;<iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
                                 <div secondary>[[review.review]]</div>
-                                <div class="layout horizontal">
-								    <span class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></span>
-                                </div>
                             </paper-item-body>
                         </paper-item>
 						</template>
@@ -128,6 +120,7 @@
                 <div id="movieSearchSection">
                     <div class="layout horizontal">
                         <paper-button on-click="searchForMovie" disabled="[[!signedIn]]">Search</paper-button>
+                        &nbsp;
                         <paper-input id="movieSearch" class="flex" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
                     </div>
                     <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
@@ -135,13 +128,10 @@
                         <paper-icon-item>
                             <img class="movie-thumbnail" slot="item-icon" src="[[result.Poster]]" alt="Poster for [[result.Title]]" />
                             <paper-item-body two-line class="movie-data">
-                                <div>[[result.Title]]</div>
+                                <div>[[result.Title]]&nbsp;<iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
                                 <div secondary>[[result.Year]]</div>
-								<div><iron-icon on-click="likeMe" icon="icons:star"></iron-icon></div>
-
                             </paper-item-body>
                         </paper-icon-item>
-
                     </template>
                     </iron-list>
                 </div>
@@ -245,18 +235,12 @@
             }
 
 			deleteFavorite(ev) {
-				console.log("Hi");
 				const dbRef = this.$.myFireApp.app.database();
 				const key = ev.model.favorite.$key;
 				const user = firebase.auth().currentUser.uid;
 				dbRef.ref('/'+user+'/'+key).set(null);
 				console.log("Deleted: " + ev.model.favorite.title);
             }
-
-			loadFavs() {
-				this.$.query2.path = "/" + this.$.fbauth.user.uid;
-				console.log(this.$.query2.path);
-			}
 
             login() {
                 this.$.fbauth.signInWithPopup().then( result => {

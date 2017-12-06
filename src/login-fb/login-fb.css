@@ -146,3 +146,11 @@ iron-list {
         overflow: hidden;
     };
 }
+
+#typeReview{
+    margin-bottom: 20px;
+}
+
+.card{
+    padding: 5px;
+}

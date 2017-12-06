@@ -95,30 +95,33 @@
                 </div>
                 <div class="align self-center" hidden$="[[signedIn]]">Sign In to View and Leave Reviews</div>
                 <div id="movieReviews">
+                    <h4>All Movie Reviews</h4>
                     <iron-list id="movieReviewsList" items="{{qryData}}" as="review">
-                        <h4>All Movie Reviews</h4>
-						<template>
-                        <paper-item>
-                            <paper-item-body two-line>
-                                <div>[[review.title]]&nbsp;</div>
-                                <div secondary>[[review.review]]</div>
-                            </paper-item-body>
-                        </paper-item>
+                        <template>
+                            <div class="card">
+                            <paper-card class="movie-review" heading="[[review.title]]">
+                                <div class="card-content">[[review.review]]</div>
+                                <div class="layout horizontal end-justified style-scope lay-out">
+                                    <div class="style-scope lay-out"></div>
+                                </div>
+                            </paper-card>
+                            </div>
 						</template>
                     </iron-list>
                 </div>
 
                 <div id="movieReviewsSearch">
-
+                    <h4>Movie Reviews For Titles Containing "[[reviewSearchTerm]]"</h4>
                     <iron-list id="movieReviewsListSearch" items="{{searchData}}" as="review">
-                        <h4>Movie Reviews For Titles Containing "[[reviewSearchTerm]]"</h4>
                         <template>
-                            <paper-item>
-                                <paper-item-body two-line>
-                                    <div>[[review.title]]</div>
-                                    <div secondary>[[review.review]]</div>
-                                </paper-item-body>
-                            </paper-item>
+                            <div class="card">
+                                <paper-card class="movie-review" heading="[[review.title]]">
+                                    <div class="card-content">[[review.review]]</div>
+                                    <div class="layout horizontal end-justified style-scope lay-out">
+                                        <div class="style-scope lay-out"></div>
+                                    </div>
+                                </paper-card>
+                            </div>
                         </template>
                     </iron-list>
                 </div>

@@ -148,7 +148,7 @@
 						<template>
 						<paper-card heading="[[favorite.title]]">
 							[[favorite.review]]
-							<div class="layout horizontal end-justified style-scope lay-out">	
+							<div class="layout horizontal end-justified style-scope lay-out">
 								<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
 							</div>
 						</template>
@@ -189,7 +189,8 @@
                 <h3>Movies</h3>
                 <div id="movieSearchSection">
                     <paper-input id="movieSearch" label="Search for a movie title" value="{{movieSearchTerm}}"></paper-input>
-                    <paper-button on-click="searchForMovie">Search</paper-button>
+                    <paper-button on-click="searchForMovie" disabled="[[!signedIn]]">Search</paper-button>
+                    <span hidden$="[[signedIn]]">Sign In to search for movies</span>
                     <iron-list id="searchResults" items="[[searchResults.Search]]" as="result">
                     <template>
                         <paper-icon-item>
@@ -310,7 +311,7 @@
 				dbRef.ref('/imdb/'+key).set(null);
 				alert("Deleted: " + ev.model.review.title);
             }
-			
+
 			deleteFavorite(ev) {
 				const dbRef = this.$.myFireApp.app.database();
 				const key = ev.model.review.$key;
@@ -318,7 +319,7 @@
 				dbRef.ref('/imdb/'+key+'/'+user).set(null);
 				alert("Deleted: " + ev.model.review.title);
             }
-			
+
 			loadFavs() {
 				this.$.query2.path = "/imdb/" + this.$.fbauth.user.uid;
 				console.log(this.$.query2.path);
@@ -333,6 +334,7 @@
 
             logout() {
                 this.$.fbauth.signOut();
+                location.reload();
             }
 
         }
